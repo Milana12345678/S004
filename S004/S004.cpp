@@ -3,33 +3,69 @@
 
 int main()
 {
-    char m1[] = "Enter your string\n";
     char str[256];
-    char s[256] = "\0";
-    int First = 2; // с какого индекса копируем
-    int Len = 4; // длина копирования
+    char s[256] = "\n";
+    int Index; // откуда
+    int Len; // длина копирования
+    char Probel[] = " ";
     char f[] = "%s";
+    char fd[] = "%d";
+    std::cout << "Enter your string:";
+    char forIndex[256] = "Index for copy: ";
+    char forLen[256] = "Length for copy: ";
+
     __asm
     {
-        lea ebx, m1
+        lea esi, str
+        push esi
+
+        lea ecx, f
+        push ecx
+        call scanf
+        add esp, 8
+
+        lea ebx, forIndex
         push ebx
+
         lea ecx, f
         push ecx
         call printf
         add esp, 8
 
-        lea ebx, str
+        lea ebx, Index
         push ebx
-        lea ecx, f
 
+        lea ecx, fd
         push ecx
         call scanf
         add esp, 8
 
-        
+        lea ebx, forLen
+        push ebx
+
+        lea ecx, f
+        push ecx
+        call printf
+        add esp, 8
+
+        lea ebx, Len
+        push ebx
+
+        lea ecx, fd
+        push ecx
+        call scanf
+        add esp, 8
+
+        lea ecx, fd
+        mov ecx, -1
+        dec esi
 
         push edx
-        mov edx, First
+        mov edx, Index
+
+        lea ecx, fd
+        mov ecx, -1
+        dec esi
 
         lea ebx, str
         push ebx
@@ -43,26 +79,30 @@ int main()
             jnz LengthStr
             push ecx
 
-            StartCopy : // Начало копирования(начиная с нуля)
-        cmp First, 0
+            StartCopy :
+        cmp Index, 0
+            jge LengthCopy
+
+            mov Index, 0
+
+            LengthCopy :
+            cmp Len, 0
             jl StrNoChange
 
-            LengthCopy : //Длина копирования
-        cmp Len, 0
-            jl StrNoChange
-
-            FirstBiggerLength :
-        cmp First, ecx
+            IndexBiggerLength :
+        cmp Index, ecx
             jg StrNoChange
 
             add edx, Len
 
-            CheckLengthCopy : 
-        add ecx, 1
-            cmp edx, ecx
-            jg StrNoChange
+            CheckLengthCopy :
 
-            add esp, 8
+        cmp edx, ecx
+            jbe Later
+            mov edx, ecx
+
+            Later :
+        add esp, 8
             mov ecx, -1
             dec esi
 
@@ -71,7 +111,7 @@ int main()
             push edi
             dec esi
 
-            mov edx, First
+            mov edx, Index
 
             Write :
         inc esi
@@ -90,11 +130,11 @@ int main()
 
             jmp End
 
-            StrNoChange : // строка без изменений
-            add esp, 8
+            StrNoChange :
+        add esp, 8
             mov ecx, -1
             dec esi
-            lea esi, [str]
+            lea esi, [Probel]
             lea edi, [s]
             push edi
 
@@ -108,6 +148,7 @@ int main()
         pop edi
             pop esi
     }
+    std::cout << "String: ";
     std::cout << s;
 }
 
